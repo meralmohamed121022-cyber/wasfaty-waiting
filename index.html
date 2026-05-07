@@ -8,6 +8,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <!-- QR Library -->
     <script src="https://unpkg.com/html5-qrcode"></script>
+    <!-- Cordova Core -->
+    <script src="cordova.js"></script>
 
     <style>
         :root {
@@ -180,8 +182,8 @@
         <main>
             <div class="input-section">
                 <div class="input-row">
-                    <div class="field-container"><label>رقم الهوية ID NUMBER</label><input type="text" id="id-no" readonly onclick="setActiveInput('id-no')"></div>
-                    <div class="field-container"><label>رقم الوصفة PRESCRIPTION</label><input type="text" id="pres-no" readonly onclick="setActiveInput('pres-no')"></div>
+                    <div class="field-container"><label>رقم الهوية ID NUMBER</label><input type="text" id="id-no" placeholder="0000000000" readonly onclick="setActiveInput('id-no')"></div>
+                    <div class="field-container"><label>رقم الوصفة PRESCRIPTION</label><input type="text" id="pres-no" placeholder="M0000000" readonly onclick="setActiveInput('pres-no')"></div>
                 </div>
                 <div class="controls-area">
                     <div class="queue-toggle-box"><label class="switch"><input type="checkbox" id="continuous-scan-check" checked><span class="slider"></span></label><span style="font-size: 0.75rem; font-weight: bold;">مسح طابور</span></div>
@@ -233,8 +235,35 @@
         let isProcessing = false; 
         let currentFacingMode = "user";
 
+        // Diagnostic Alert & Request Permissions on Startup
+        document.addEventListener('deviceready', () => {
+            console.log("Device Ready Fired!");
+            
+            // Check Persistence
+            if (localStorage.getItem('wasfaty_logged_in') === 'true') {
+                document.getElementById('login-screen').classList.remove('active');
+                document.getElementById('main-screen').classList.add('active');
+                setActiveInput('id-no');
+            }
+
+            const permissions = cordova.plugins.permissions;
+            const list = [ permissions.CAMERA ]; // Focus on CAMERA first
+
+            permissions.checkPermission(permissions.CAMERA, (status) => {
+                if (!status.hasPermission) {
+                    permissions.requestPermissions(list, (s) => {
+                        if (s.hasPermission) console.log("Camera Permission Granted");
+                        else alert("فضلاً قم بالسماح للكاميرا من إعدادات التطبيق");
+                    }, (e) => {
+                        alert("حدث خطأ في طلب الأذونات: " + JSON.stringify(e));
+                    });
+                }
+            }, null);
+        }, false);
+
         function checkAccess() {
             if (document.getElementById('access-code').value === 'p66') {
+                localStorage.setItem('wasfaty_logged_in', 'true');
                 document.getElementById('login-screen').classList.remove('active');
                 document.getElementById('main-screen').classList.add('active');
                 setActiveInput('id-no');
