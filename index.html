@@ -1,383 +1,946 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>نظام انتظار عملاء وصفتي | Al-Dawaa</title>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
-    <!-- QR Library -->
-    <script src="https://unpkg.com/html5-qrcode"></script>
-    <!-- Cordova Core -->
-    <script src="cordova.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>MONOShare | Premium File Transfer</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <style>
+    :root {
+      --dark-blue: #001f3f;
+      --orange: #ff851b;
+      --white: #ffffff;
+      --gray-light: #f4f7f6;
+      --accent-blue: #0074d9;
+      --text-main: #333;
+    }
 
-    <style>
-        :root {
-            --primary-blue: #002d62;
-            --light-blue: #1e3a8a;
-            --dark-blue: #001a3d;
-            --key-blue: #003a80;
-            --orange: #f89a1c;
-            --yellow: #f8c301;
-            --red: #c53030;
-            --bg-gray: #f3f4f6;
-            --text-gray: #4b5563;
-        }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            -webkit-tap-highlight-color: transparent;
-        }
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--dark-blue);
+      color: var(--white);
+      line-height: 1.6;
+      padding-bottom: 40px;
+    }
 
-        body {
-            font-family: 'Cairo', 'Inter', sans-serif;
-            background-color: #fff;
-            color: #333;
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
+    /* Header */
+    header {
+      background: var(--dark-blue);
+      color: var(--white);
+      padding: 40px 20px;
+      text-align: center;
+      border-bottom: 3px solid var(--orange);
+    }
 
-        .screen { display: none; flex: 1; width: 100%; height: 100%; overflow: hidden; }
-        .screen.active { display: flex; flex-direction: column; }
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -1px;
+    }
 
-        header {
-            background-color: white;
-            padding: 8px 15px;
-            border-bottom: 2px solid var(--bg-gray);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-shrink: 0;
-        }
-        body.scanner-open header { display: none; }
+    h1 span {
+      color: var(--orange);
+    }
 
-        .logo-top img { height: 30px; }
+    .container {
+      max-width: 1000px;
+      margin: -20px auto 0;
+      padding: 0 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
 
-        main { flex: 1; display: flex; flex-direction: column; background-color: #f8fafc; overflow: hidden; position: relative; }
+    /* Connection Banner */
+    .ip-banner {
+      background: var(--white);
+      border-radius: 20px;
+      padding: 25px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(0, 0, 0, 0.05);
+    }
 
-        /* Input Section - Shrinkable */
-        .input-section { padding: 10px 15px; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.05); flex-shrink: 0; }
-        body.scanner-open .input-section { display: none; }
+    .ip-info {
+      flex: 1;
+    }
 
-        .input-row { display: flex; gap: 10px; max-width: 900px; margin: 0 auto; }
-        .field-container { flex: 1; text-align: center; }
-        .field-container label { display: block; font-size: 0.75rem; font-weight: 800; margin-bottom: 2px; color: var(--text-gray); }
-        .field-container input { width: 100%; padding: 8px; background-color: var(--primary-blue); border: 2px solid transparent; color: white; font-size: 1.2rem; font-weight: 700; border-radius: 10px; text-align: center; }
-        .field-container input.active { border-color: var(--orange); background-color: var(--dark-blue); }
+    .ip-info p {
+      color: #666;
+      font-size: 0.95rem;
+      margin-bottom: 10px;
+    }
 
-        .controls-area { display: flex; align-items: center; justify-content: center; gap: 15px; margin-top: 5px; }
-        .queue-toggle-box { display: flex; align-items: center; gap: 8px; padding: 4px 12px; background: #f1f5f9; border-radius: 50px; }
+    .ip-link {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--dark-blue);
+      text-decoration: none;
+      word-break: break-all;
+      border-bottom: 3px solid var(--orange);
+    }
 
-        .circle-btn {
-            width: 65px; height: 65px;
-            border-radius: 50%;
-            border: 3px solid var(--orange);
-            background-color: var(--primary-blue);
-            color: white;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            cursor: pointer; font-weight: 700; font-size: 0.75rem; gap: 2px;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
-            z-index: 150;
-        }
-        .circle-btn.close { border-color: #ef4444; }
+    .qr-code {
+      width: 130px;
+      height: 130px;
+      background: #f9f9f9;
+      background: var(--white);
+      padding: 10px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
 
-        /* Full Screen Scanner Overlay */
-        .scanner-container-inline {
-            display: none;
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.98); z-index: 100;
-        }
-        body.scanner-open .scanner-container-inline { display: block; }
+    /* CSS Art for Scanner */
+    .scanner-container {
+      position: relative;
+      display: none;
+      margin-top: 15px;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 3px solid var(--accent-blue);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+      width: 100%;
+      background: #000;
+    }
+    .scan-line {
+      width: 100%;
+      height: 2px;
+      background: var(--orange);
+      box-shadow: 0 0 10px var(--orange), 0 0 20px var(--orange);
+      position: absolute;
+      top: 0;
+      animation: scan 2.5s infinite linear;
+      z-index: 10;
+    }
+    @keyframes scan {
+      0% { top: 0; }
+      50% { top: 100%; }
+      100% { top: 0; }
+    }
+    .corner {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      border-color: var(--orange);
+      border-style: solid;
+      z-index: 10;
+    }
+    .top-left { top: 15px; left: 15px; border-width: 4px 0 0 4px; border-radius: 8px 0 0 0; }
+    .top-right { top: 15px; right: 15px; border-width: 4px 4px 0 0; border-radius: 0 8px 0 0; }
+    .bottom-left { bottom: 15px; left: 15px; border-width: 0 0 4px 4px; border-radius: 0 0 0 8px; }
+    .bottom-right { bottom: 15px; right: 15px; border-width: 0 4px 4px 0; border-radius: 0 0 8px 0; }
+    #reader video {
+      border-radius: 17px;
+      object-fit: cover;
+    }
 
-        .scanner-frame-inline { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; }
-        #reader { width: 100% !important; height: 100% !important; }
-        #reader video { object-fit: cover !important; width: 100% !important; height: 100% !important; }
+    /* Upload Section */
+    .card {
+      background: var(--white);
+      border-radius: 24px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+      border: 1px solid rgba(0, 0, 0, 0.02);
+    }
 
-        .scanner-controls-overlay {
-            position: absolute; top: 15px; left: 0; width: 100%;
-            display: flex; justify-content: center; gap: 25px; z-index: 200;
-        }
+    h2 {
+      color: var(--dark-blue);
+      font-size: 1.3rem;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+    }
 
-        #scanner-status {
-            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
-            background: rgba(248, 154, 28, 0.9); color: #000; padding: 10px 20px;
-            border-radius: 30px; font-weight: 800; z-index: 200; font-size: 1rem;
-        }
+    /* Upload Area */
+    .drop-zone {
+      border: 3px dashed #d1d5db;
+      border-radius: 20px;
+      padding: 40px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: #fafafa;
+      color: #6b7280;
+    }
 
-        /* Keyboard - FORCED TO FIT */
-        .keyboard {
-            background-color: #e5e7eb;
-            padding: 5px 8px;
-            display: flex; flex-direction: column; gap: 5px;
-            border-top: 1px solid #d1d5db; 
-            flex: 1; /* This will take the remaining space */
-            justify-content: space-evenly;
-            overflow: hidden;
-        }
-        body.scanner-open .keyboard { display: none; }
+    .drop-zone:hover,
+    .drop-zone.drag-over {
+      background: #fff8f1;
+      border-color: var(--orange);
+      color: var(--orange);
+    }
 
-        .kb-row { display: flex; gap: 5px; justify-content: center; flex: 1; min-height: 0; }
-        .key {
-            background-color: #fff; border: none; border-radius: 8px; 
-            padding: 2px;
-            font-size: 1.3rem; font-weight: 700; color: #1f2937; box-shadow: 0 3px 0 #9ca3af;
-            cursor: pointer; flex: 1; max-width: 80px; display: flex; justify-content: center; align-items: center;
-            height: 90%; /* Occupy row height */
-        }
-        .key.letter { background-color: var(--key-blue); color: white; box-shadow: 0 3px 0 #001a3d; }
-        .key.letter.faded { opacity: 0.3; pointer-events: none; }
-        .key.special { background-color: #991b1b; color: white; box-shadow: 0 3px 0 #450a0a; }
+    .drop-zone i {
+      font-size: 3rem;
+      margin-bottom: 15px;
+      display: block;
+    }
 
-        .kb-row.actions { margin-top: 2px; display: flex; flex-direction: row-reverse; flex: 1.2; }
-        .btn-send, .btn-reset { padding: 0 20px; font-size: 1.3rem; font-weight: 800; border: none; border-radius: 12px; color: white; cursor: pointer; height: 90%; display: flex; align-items: center; justify-content: center; }
-        .btn-send { flex: 2; background-color: var(--orange); box-shadow: 0 4px 0 #c2410c; }
-        .btn-reset { flex: 1; background-color: #dc2626; box-shadow: 0 4px 0 #991b1b; }
+    .drop-zone input {
+      display: none;
+    }
 
-        /* Specific Tablet/Landscape Fixes */
-        @media (orientation: landscape) {
-            header { padding: 4px 15px; }
-            .input-section { padding: 4px 15px; }
-            .field-container input { padding: 5px; font-size: 1rem; }
-            .circle-btn { width: 45px; height: 45px; font-size: 0.6rem; }
-            .keyboard { gap: 3px; padding: 3px 8px; }
-            .kb-row { gap: 3px; }
-            .key { font-size: 1rem; border-radius: 6px; }
-            .btn-send, .btn-reset { font-size: 1rem; }
-        }
+    .btn {
+      background: var(--dark-blue);
+      color: var(--white);
+      border: none;
+      padding: 16px 24px;
+      border-radius: 16px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 15px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      transition: transform 0.2s, background 0.2s;
+    }
 
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 45, 98, 0.95); display: none; justify-content: center; align-items: center; z-index: 3000; }
-        .modal-content { background: white; width: 85%; max-width: 400px; border-radius: 25px; text-align: center; padding: 20px; }
-        .queue-num { font-size: 6rem; font-weight: 900; color: var(--primary-blue); margin: 10px 0; }
-        
-        .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 20px; }
-        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--orange); }
-        input:checked + .slider:before { transform: translateX(20px); }
-    </style>
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn:hover {
+      background: #002d5a;
+    }
+
+    .btn-orange {
+      background: var(--orange);
+    }
+
+    .btn-orange:hover {
+      background: #e67716;
+    }
+
+    .progress {
+      height: 12px;
+      background: #eee;
+      border-radius: 10px;
+      margin-top: 20px;
+      overflow: hidden;
+      display: none;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--orange), #ffb347);
+      width: 0%;
+      transition: width 0.1s;
+    }
+
+    /* File List */
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .refresh-btn {
+      background: #eee;
+      color: var(--dark-blue);
+      border: none;
+      padding: 10px 18px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .delete-all-btn {
+      color: #ef4444;
+      background: none;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .file-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 15px;
+    }
+
+    .file-item {
+      background: #fff;
+      border: 1px solid #eee;
+      border-radius: 18px;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .file-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .file-preview {
+      width: 100%;
+      height: 160px;
+      background: #f8f9fa;
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .file-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .file-preview .icon {
+      font-size: 3rem;
+      color: #ccc;
+    }
+
+    .preview-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: 0.3s;
+      color: white;
+      font-weight: bold;
+    }
+
+    .file-preview:hover .preview-overlay {
+      opacity: 1;
+    }
+
+    .file-details {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .file-name {
+      font-weight: 700;
+      color: var(--dark-blue);
+      font-size: 0.95rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 4px;
+    }
+
+    .file-meta {
+      font-size: 0.8rem;
+      color: #888;
+      display: flex;
+      gap: 10px;
+    }
+
+    .file-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: auto;
+    }
+
+    .action-btn {
+      flex: 1;
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    .btn-download {
+      background: var(--dark-blue);
+      color: white;
+    }
+
+    .btn-delete {
+      background: #fee2e2;
+      color: #ef4444;
+    }
+
+    /* Lightbox/Modal */
+    #lightbox {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 31, 63, 0.95);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .lightbox-content {
+      max-width: 90%;
+      max-height: 85vh;
+      border-radius: 15px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    }
+
+    .close-lightbox {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      color: white;
+      font-size: 2rem;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.1);
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+
+    #msg { text-align: center; margin-top: 15px; font-weight: 600; }
+
+    /* Toast Notification */
+    .toast-container {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: none;
+    }
+    .toast {
+      background: var(--dark-blue);
+      color: white;
+      padding: 12px 25px;
+      border-radius: 50px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      font-weight: 600;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 3px solid var(--orange);
+      animation: toastIn 0.3s cubic-bezier(0.17, 0.89, 0.32, 1.49);
+      pointer-events: auto;
+    }
+    @keyframes toastIn {
+      from { transform: translateY(100px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .toast.error { border-bottom-color: #ef4444; }
+
+    /* Custom Confirmation Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 31, 63, 0.8);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(5px);
+    }
+    .modal-card {
+      background: white;
+      border-radius: 24px;
+      padding: 30px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+      animation: modalPop 0.3s cubic-bezier(0.17, 0.89, 0.32, 1.49);
+    }
+    @keyframes modalPop {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .modal-icon { font-size: 3.5rem; margin-bottom: 15px; display: block; }
+    .modal-title { font-weight: 800; font-size: 1.4rem; color: var(--dark-blue); margin-bottom: 10px; }
+    .modal-text { color: #666; margin-bottom: 25px; }
+    .modal-btns { display: flex; gap: 12px; }
+    .m-btn { flex: 1; padding: 14px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; transition: 0.2s; }
+    .m-btn-cancel { background: #eee; color: #333; }
+    .m-btn-confirm { background: #ef4444; color: white; }
+
+    /* Day Labels */
+    .day-label {
+      grid-column: 1 / -1;
+      font-weight: 800;
+      color: var(--orange);
+      font-size: 1rem;
+      margin-top: 25px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--orange);
+      display: inline-block;
+      width: auto;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.8rem;
+      }
+
+      .ip-banner {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .container {
+        margin-top: -10px;
+      }
+
+      .file-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .card {
+        padding: 20px;
+        border-radius: 20px;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-    <div id="login-screen" class="screen active">
-        <div class="login-container">
-            <img src="https://www.al-dawaa.com/static/version1714571983/frontend/AlDawaa/default/en_US/images/logo.svg" alt="Logo" style="width:130px; margin-bottom:20px;">
-            <h2 style="color: var(--primary-blue); margin-bottom: 20px; font-size: 1.2rem;">دخول الموظف</h2>
-            <input type="password" id="access-code" placeholder="رمز الدخول p66" style="width:100%; padding: 15px; border-radius: 12px; border: 2px solid #ddd; font-size: 1.1rem; text-align: center; margin-bottom:15px;">
-            <button onclick="checkAccess()" style="width:100%; padding: 15px; background: var(--primary-blue); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: bold;">دخول</button>
-        </div>
+  <header>
+    <h1>MONO<span>Share</span></h1>
+  </header>
+
+  <div class="container">
+
+    <!-- Connection Banner -->
+    <div class="ip-banner" style="margin-bottom: 25px;">
+      <div class="ip-info">
+        <p>📱 Scan to connect from phone:</p>
+        <a href="http://{{ server_ip }}:5000" class="ip-link" id="serverLink">http://{{ server_ip }}:5000</a>
+      </div>
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://{{ server_ip }}:5000" alt="QR Code"
+        class="qr-code">
     </div>
 
-    <div id="main-screen" class="screen">
-        <header>
-            <img src="https://www.al-dawaa.com/static/version1714571983/frontend/AlDawaa/default/en_US/images/logo.svg" alt="Logo">
-            <div style="font-weight: bold; color: var(--primary-blue); font-size: 0.9rem;">نظام انتظار وصفتي</div>
-        </header>
-
-        <main>
-            <div class="input-section">
-                <div class="input-row">
-                    <div class="field-container"><label>رقم الهوية ID NUMBER</label><input type="text" id="id-no" placeholder="0000000000" readonly onclick="setActiveInput('id-no')"></div>
-                    <div class="field-container"><label>رقم الوصفة PRESCRIPTION</label><input type="text" id="pres-no" placeholder="M0000000" readonly onclick="setActiveInput('pres-no')"></div>
-                </div>
-                <div class="controls-area">
-                    <div class="queue-toggle-box"><label class="switch"><input type="checkbox" id="continuous-scan-check" checked><span class="slider"></span></label><span style="font-size: 0.75rem; font-weight: bold;">مسح طابور</span></div>
-                    <button class="circle-btn" onclick="toggleCamera()"><span>📸</span><span>فتح</span></button>
-                </div>
-            </div>
-
-            <div id="built-in-scanner" class="scanner-container-inline" onclick="closeCameraOnBg(event)">
-                <div class="scanner-controls-overlay">
-                    <button class="circle-btn" onclick="switchCamera()"><span>🔄</span><span>تبديل</span></button>
-                    <button class="circle-btn close" onclick="toggleCamera()"><span>❌</span><span>إغلاق</span></button>
-                </div>
-                <div class="scanner-frame-inline"><div id="reader"></div></div>
-                <div id="scanner-status">جاري المسح...</div>
-            </div>
-
-            <div class="keyboard">
-                <div class="kb-row">
-                    <button class="key" onclick="keyPress('1')">1</button><button class="key" onclick="keyPress('2')">2</button><button class="key" onclick="keyPress('3')">3</button><button class="key" onclick="keyPress('4')">4</button><button class="key" onclick="keyPress('5')">5</button><button class="key" onclick="keyPress('6')">6</button><button class="key" onclick="keyPress('7')">7</button><button class="key" onclick="keyPress('8')">8</button><button class="key" onclick="keyPress('9')">9</button><button class="key" onclick="keyPress('0')">0</button>
-                </div>
-                <div class="kb-row">
-                    <button class="key letter" onclick="keyPress('q')">q</button><button class="key letter" onclick="keyPress('w')">w</button><button class="key letter" onclick="keyPress('e')">e</button><button class="key letter" onclick="keyPress('r')">r</button><button class="key letter" onclick="keyPress('t')">t</button><button class="key letter" onclick="keyPress('y')">y</button><button class="key letter" onclick="keyPress('u')">u</button><button class="key letter" onclick="keyPress('i')">i</button><button class="key letter" onclick="keyPress('o')">o</button><button class="key letter" onclick="keyPress('p')">p</button>
-                </div>
-                <div class="kb-row">
-                    <button class="key letter" onclick="keyPress('a')">a</button><button class="key letter" onclick="keyPress('s')">s</button><button class="key letter" onclick="keyPress('d')">d</button><button class="key letter" onclick="keyPress('f')">f</button><button class="key letter" onclick="keyPress('g')">g</button><button class="key letter" onclick="keyPress('h')">h</button><button class="key letter" onclick="keyPress('j')">j</button><button class="key letter" onclick="keyPress('k')">k</button><button class="key letter" onclick="keyPress('l')">l</button>
-                </div>
-                <div class="kb-row">
-                    <button class="key special" onclick="keyPress('backspace')">⌫</button><button class="key letter" onclick="keyPress('z')">z</button><button class="key letter" onclick="keyPress('x')">x</button><button class="key letter" onclick="keyPress('c')">c</button><button class="key letter" onclick="keyPress('v')">v</button><button class="key letter" onclick="keyPress('b')">b</button><button class="key letter" onclick="keyPress('n')">n</button><button class="key letter" onclick="keyPress('m')">m</button>
-                </div>
-                <div class="kb-row actions">
-                    <button class="btn-reset" onclick="resetInputs()">إعادة تعيين</button><button class="btn-send" onclick="sendData()">إرسال</button>
-                </div>
-            </div>
-        </main>
+    <!-- QR Scanner Section -->
+    <div class="card" id="scanner-card" style="text-align: center; margin-bottom: 25px;">
+      <h2 style="justify-content: center;"><span>📷</span> Connect to another device</h2>
+      <button class="btn btn-orange" id="start-scan-btn" onclick="startScanner()">🔍 Scan QR Code</button>
+      
+      <div class="scanner-container" id="scanner-container">
+        <div id="reader" style="width: 100%;"></div>
+        <div class="scan-line" id="scan-line"></div>
+        <div class="corner top-left"></div>
+        <div class="corner top-right"></div>
+        <div class="corner bottom-left"></div>
+        <div class="corner bottom-right"></div>
+      </div>
+      
+      <button class="btn" id="stop-scan-btn" onclick="stopScanner()" style="display: none; background: #ef4444; margin-top: 15px;">⏹ Stop Scanner</button>
     </div>
 
-    <div id="queue-modal" class="modal-overlay">
-        <div class="modal-content">
-            <div style="width: 70px; height: 70px; border-radius: 50%; border: 4px solid #10b981; color: #10b981; display: flex; align-items: center; justify-content: center; font-size: 35px; margin: 0 auto 10px;">✓</div>
-            <h3 style="color: #666; font-size: 1.2rem;">رقم الانتظار الخاص بك هو</h3>
-            <div id="queue-number-display" class="queue-num">1</div>
-            <button onclick="closeQueueModal()" style="width: 100%; padding: 15px; background: #ef4444; color: white; border: none; font-size: 1.2rem; font-weight: bold; border-radius:15px;">إغلاق</button>
-        </div>
+    <!-- Upload Section -->
+    <div class="card">
+      <h2><span>⬆️</span> Upload Files</h2>
+      <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+        <input type="file" id="fileInput" onchange="handleFile(this.files[0])">
+        <i style="font-style: normal; font-size: 3rem;">📁</i>
+        <p>Drag and drop or tap to select</p>
+      </div>
+      <div id="selected-name" style="margin-top: 15px;"></div>
+      <div class="progress" id="progressWrapper">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+      <button class="btn btn-orange" onclick="uploadFile()">📤 Start Upload</button>
+      <div id="msg"></div>
     </div>
 
-    <script>
-        let activeInputId = 'id-no';
-        let html5QrCode = null;
-        let isProcessing = false; 
-        let currentFacingMode = "user";
+    <!-- Files Section -->
+    <div class="card">
+      <div class="toolbar">
+        <h2><span>📥</span> Shared Files</h2>
+        <button class="refresh-btn" onclick="loadFiles()">🔄 Refresh</button>
+      </div>
 
-        // Diagnostic Alert & Request Permissions on Startup
-        document.addEventListener('deviceready', () => {
-            console.log("Device Ready Fired!");
-            
-            // Check Persistence
-            if (localStorage.getItem('wasfaty_logged_in') === 'true') {
-                document.getElementById('login-screen').classList.remove('active');
-                document.getElementById('main-screen').classList.add('active');
-                setActiveInput('id-no');
+      <div class="file-grid" id="fileGrid">
+        <!-- Files will be loaded here -->
+      </div>
+
+      <div style="margin-top: 30px; text-align: center;">
+        <button class="delete-all-btn" onclick="deleteAll()">🗑️ Delete All Shared Files</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Lightbox -->
+  <div id="lightbox" onclick="closeLightbox()">
+    <span class="close-lightbox">&times;</span>
+    <div id="lightbox-container" onclick="event.stopPropagation()">
+      <!-- Content injected via JS -->
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Confirmation Modal -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-card">
+      <span class="modal-icon" id="modalIcon">🗑️</span>
+      <div class="modal-title" id="modalTitle">Are you sure?</div>
+      <div class="modal-text" id="modalText">This action cannot be undone.</div>
+      <div class="modal-btns">
+        <button class="m-btn m-btn-cancel" onclick="closeModal()">Cancel</button>
+        <button class="m-btn m-btn-confirm" id="modalConfirmBtn">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let selectedFile = null;
+
+    // UI Tools
+    function showToast(text, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `<span>${type === 'success' ? '✅' : '❌'}</span> ${text}`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(20px)';
+        toast.style.transition = '0.4s';
+        setTimeout(() => toast.remove(), 400);
+      }, 3000);
+    }
+
+    let modalCallback = null;
+    function openModal(title, text, icon, callback) {
+      document.getElementById('modalTitle').textContent = title;
+      document.getElementById('modalText').textContent = text;
+      document.getElementById('modalIcon').textContent = icon;
+      document.getElementById('modalOverlay').style.display = 'flex';
+      modalCallback = callback;
+    }
+
+    function closeModal() {
+      document.getElementById('modalOverlay').style.display = 'none';
+    }
+
+    document.getElementById('modalConfirmBtn').onclick = () => {
+      if (modalCallback) modalCallback();
+      closeModal();
+    };
+
+    // Keyboard Shortcuts
+    window.addEventListener('keydown', (e) => {
+      if (e.key === "Escape") {
+        closeModal();
+        closeLightbox();
+      }
+      if (e.key === "Enter") {
+        // If modal is open, confirm it
+        if (document.getElementById('modalOverlay').style.display === 'flex') {
+          document.getElementById('modalConfirmBtn').click();
+        } 
+        // If file selected but not uploading, start upload
+        else if (selectedFile && document.getElementById('progressWrapper').style.display !== 'block') {
+          uploadFile();
+        }
+      }
+    });
+
+    // Click Outside to Close
+    window.onclick = (e) => {
+      if (e.target === document.getElementById('modalOverlay')) closeModal();
+      if (e.target === document.getElementById('lightbox')) closeLightbox();
+    };
+
+    // Drag and Drop
+    const dropZone = document.getElementById("dropZone");
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => {
+      dropZone.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation(); });
+    });
+    dropZone.addEventListener("dragover", () => dropZone.classList.add('drag-over'));
+    dropZone.addEventListener("dragleave", () => dropZone.classList.remove('drag-over'));
+    dropZone.addEventListener("drop", e => {
+      dropZone.classList.remove('drag-over');
+      const file = e.dataTransfer.files[0];
+      if (file) {
+        handleFile(file);
+        showToast("File detected, starting upload...");
+        uploadFile();
+      }
+    });
+
+    function handleFile(file) {
+      if (!file) return;
+      selectedFile = file;
+      document.getElementById("selected-name").innerHTML = `<b>Selected:</b> ${file.name} (${formatSize(file.size)})`;
+      document.getElementById("progressBar").style.width = "0%";
+      document.getElementById("progressWrapper").style.display = "none";
+    }
+
+    function uploadFile() {
+      if (!selectedFile) { alert("Please select a file first!"); return; }
+
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+
+      const xhr = new XMLHttpRequest();
+      document.getElementById("progressWrapper").style.display = "block";
+
+      xhr.upload.onprogress = e => {
+        if (e.lengthComputable) {
+          const pct = Math.round(e.loaded / e.total * 100);
+          document.getElementById("progressBar").style.width = pct + "%";
+        }
+      };
+
+      xhr.onload = () => {
+        if (xhr.status === 200) {
+          showToast("File uploaded successfully!");
+          selectedFile = null;
+          document.getElementById("selected-name").textContent = "";
+          document.getElementById("fileInput").value = "";
+          setTimeout(() => { document.getElementById("progressWrapper").style.display = "none"; }, 1500);
+          loadFiles();
+        } else {
+          showToast("Upload failed!", "error");
+        }
+      };
+
+      xhr.onerror = () => {
+        showToast("Network Error!", "error");
+      };
+
+      xhr.open("POST", "/upload");
+      xhr.send(formData);
+    }
+
+    function isImage(name) {
+      return /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(name);
+    }
+
+    function isVideo(name) {
+      return /\.(mp4|webm|ogg|mov)$/i.test(name);
+    }
+
+    function loadFiles() {
+      fetch("/files").then(r => r.json()).then(files => {
+        const grid = document.getElementById("fileGrid");
+        if (files.length === 0) {
+          grid.innerHTML = '<p style="grid-column:1/-1; color:#999; text-align:center; padding:40px;">No files shared yet. Start uploading!</p>';
+          return;
+        }
+
+        const groups = {}, order = [];
+        files.forEach(f => {
+          const k = getDayLabel(f.date);
+          if (!groups[k]) { groups[k] = [], order.push(k); }
+          groups[k].push(f);
+        });
+
+        let html = "";
+        order.forEach(k => {
+          html += `<div class="day-label">${k}</div>`;
+          groups[k].forEach(f => {
+            const previewUrl = `/download/${encodeURIComponent(f.name)}`;
+            let previewContent = '<div class="icon">📄</div>';
+
+            if (isImage(f.name)) {
+              previewContent = `<img src="${previewUrl}" alt="preview">`;
+            } else if (isVideo(f.name)) {
+              previewContent = '<div class="icon">🎬</div>';
             }
 
-            const permissions = cordova.plugins.permissions;
-            const list = [ permissions.CAMERA ]; // Focus on CAMERA first
+            html += `
+              <div class="file-item">
+                <div class="file-preview" onclick="openPreview('${f.name}')">
+                  ${previewContent}
+                  <div class="preview-overlay">VIEW</div>
+                </div>
+                <div class="file-details">
+                  <div class="file-name" title="${f.name}">${f.name}</div>
+                  <div class="file-meta">
+                    <span>${formatSize(f.size)}</span>
+                    <span>🕒 ${formatTime(f.date)}</span>
+                  </div>
+                </div>
+                <div class="file-actions">
+                  <button class="action-btn btn-download" onclick="window.location='${previewUrl}'">⬇️ Save</button>
+                  <button class="action-btn btn-delete" onclick="deleteFile('${f.name}')">🗑️</button>
+                </div>
+              </div>`;
+          });
+        });
+        grid.innerHTML = html;
+      });
+    }
 
-            permissions.checkPermission(permissions.CAMERA, (status) => {
-                if (!status.hasPermission) {
-                    permissions.requestPermissions(list, (s) => {
-                        if (s.hasPermission) console.log("Camera Permission Granted");
-                        else alert("فضلاً قم بالسماح للكاميرا من إعدادات التطبيق");
-                    }, (e) => {
-                        alert("حدث خطأ في طلب الأذونات: " + JSON.stringify(e));
-                    });
-                }
-            }, null);
-        }, false);
+    function openPreview(name) {
+      const url = `/download/${encodeURIComponent(name)}`;
+      const container = document.getElementById("lightbox-container");
+      let content = "";
 
-        function checkAccess() {
-            if (document.getElementById('access-code').value === 'p66') {
-                localStorage.setItem('wasfaty_logged_in', 'true');
-                document.getElementById('login-screen').classList.remove('active');
-                document.getElementById('main-screen').classList.add('active');
-                setActiveInput('id-no');
-            }
+      if (isImage(name)) {
+        content = `<img src="${url}" class="lightbox-content">`;
+      } else if (isVideo(name)) {
+        content = `<video src="${url}" controls autoplay class="lightbox-content" style="max-width:100%"></video>`;
+      } else {
+        window.location = url;
+        return;
+      }
+
+      container.innerHTML = content;
+      document.getElementById("lightbox").style.display = "flex";
+    }
+
+    function closeLightbox() {
+      document.getElementById("lightbox").style.display = "none";
+      document.getElementById("lightbox-container").innerHTML = "";
+    }
+
+    function deleteFile(name) {
+      openModal(
+        "Delete File?",
+        `Are you sure you want to delete "${name}"?`,
+        "🗑️",
+        () => {
+          fetch("/delete/" + encodeURIComponent(name), { method: "DELETE" }).then(() => {
+            showToast("File deleted");
+            loadFiles();
+          });
         }
+      );
+    }
 
-        function setActiveInput(id) {
-            activeInputId = id;
-            document.querySelectorAll('.field-container input').forEach(input => input.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            const letterKeys = document.querySelectorAll('.key.letter');
-            if (id === 'id-no') letterKeys.forEach(k => k.classList.add('faded'));
-            else letterKeys.forEach(k => k.classList.remove('faded'));
+    function deleteAll() {
+      openModal(
+        "Delete ALL Files?",
+        "This will permanently remove everything shared. Are you sure?",
+        "⚠️",
+        () => {
+          fetch("/delete-all", { method: "DELETE" }).then(() => {
+            showToast("All files deleted");
+            loadFiles();
+          });
         }
+      );
+    }
 
-        function keyPress(key) {
-            const input = document.getElementById(activeInputId);
-            let val = input.value;
-            if (key === 'backspace') { input.value = val.slice(0, -1); return; }
-            if (activeInputId === 'pres-no') {
-                if (val.length === 0 && /[a-z]/i.test(key)) input.value += key.toLowerCase();
-                else if (val.length < 8 && /[0-9]/.test(key)) input.value += key;
-            } else { if (/[0-9]/.test(key) && val.length < 10) input.value += key; }
+    function formatTime(dateStr) {
+      if (!dateStr || dateStr === "—") return "—";
+      const d = new Date(dateStr.replace(" ", "T"));
+      return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function getDayLabel(dateStr) {
+      if (!dateStr || dateStr === "—") return "Recent";
+      const d = new Date(dateStr.replace(" ", "T"));
+      const today = new Date();
+      if (d.toDateString() === today.toDateString()) return "Today";
+      const yesterday = new Date(); yesterday.setDate(today.getDate() - 1);
+      if (d.toDateString() === yesterday.toDateString()) return "Yesterday";
+      return d.toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric' });
+    }
+
+    function formatSize(bytes) {
+      if (bytes < 1024) return bytes + " B";
+      if (bytes < 1048576) return (bytes / 1024).toFixed(1) + " KB";
+      return (bytes / 1048576).toFixed(1) + " MB";
+    }
+
+    let html5QrCode = null;
+
+    function startScanner() {
+      document.getElementById("scanner-container").style.display = "block";
+      document.getElementById("start-scan-btn").style.display = "none";
+      document.getElementById("stop-scan-btn").style.display = "block";
+      
+      if (!html5QrCode) {
+        html5QrCode = new Html5Qrcode("reader");
+      }
+      
+      html5QrCode.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: { width: 250, height: 250 } },
+        (decodedText, decodedResult) => {
+          stopScanner();
+          showToast("Connected! Redirecting...");
+          setTimeout(() => {
+            window.location.href = decodedText;
+          }, 1000);
+        },
+        (errorMessage) => {
+          // parse error, ignore
         }
+      ).catch((err) => {
+        console.error(err);
+        showToast("Error or camera access denied.", "error");
+        stopScanner();
+      });
+    }
 
-        function resetInputs() {
-            document.getElementById('pres-no').value = '';
-            document.getElementById('id-no').value = '';
-            setActiveInput('id-no');
-        }
+    function stopScanner() {
+      if (html5QrCode && html5QrCode.isScanning) {
+        html5QrCode.stop().then(() => {
+          html5QrCode.clear();
+          html5QrCode = null;
+          hideScannerUI();
+        }).catch(err => {
+          console.error("Failed to stop scanner. ", err);
+          html5QrCode = null;
+          hideScannerUI();
+        });
+      } else {
+        if (html5QrCode) html5QrCode.clear();
+        html5QrCode = null;
+        hideScannerUI();
+      }
+    }
+    
+    function hideScannerUI() {
+      document.getElementById("scanner-container").style.display = "none";
+      document.getElementById("start-scan-btn").style.display = "block";
+      document.getElementById("stop-scan-btn").style.display = "none";
+    }
 
-        function sendData() {
-            if (isProcessing) return;
-            if (document.getElementById('id-no').value.length < 10) { alert("بيانات ناقصة!"); return; }
-            showQueueModal();
-        }
-
-        function showQueueModal() {
-            isProcessing = true;
-            let count = parseInt(localStorage.getItem('queueCount')) || 1;
-            document.getElementById('queue-number-display').textContent = count;
-            document.getElementById('queue-modal').style.display = 'flex';
-            localStorage.setItem('queueCount', count + 1);
-            setTimeout(() => { isProcessing = false; }, 2000);
-        }
-
-        function closeQueueModal() {
-            document.getElementById('queue-modal').style.display = 'none';
-            resetInputs();
-        }
-
-        function toggleCamera() {
-            const scannerDiv = document.getElementById('built-in-scanner');
-            if (document.body.classList.contains('scanner-open')) {
-                document.body.classList.remove('scanner-open');
-                if (html5QrCode) html5QrCode.stop().catch(e => console.log(e));
-            } else {
-                document.body.classList.add('scanner-open');
-                startScanner();
-            }
-        }
-
-        function closeCameraOnBg(e) {
-            if (e.target.id === 'built-in-scanner' || e.target.classList.contains('scanner-frame-inline')) {
-                toggleCamera();
-            }
-        }
-
-        function switchCamera() {
-            currentFacingMode = (currentFacingMode === "user") ? "environment" : "user";
-            if (html5QrCode) html5QrCode.stop().then(() => startScanner()).catch(e => startScanner());
-        }
-
-        function startScanner() {
-            const statusEl = document.getElementById('scanner-status');
-            statusEl.style.display = 'block';
-            statusEl.textContent = 'جاري المسح...';
-
-            if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
-            
-            const config = { 
-                fps: 30, 
-                qrbox: (viewWidth, viewHeight) => {
-                    const minDim = Math.min(viewWidth, viewHeight);
-                    return { width: minDim * 0.8, height: minDim * 0.8 };
-                },
-                aspectRatio: 1.0,
-                videoConstraints: {
-                    facingMode: currentFacingMode,
-                    width: { ideal: 1280 },
-                    height: { ideal: 720 },
-                    focusMode: "continuous"
-                }
-            };
-
-            html5QrCode.start({ facingMode: currentFacingMode }, config, (text) => {
-                if (isProcessing) return;
-                let found = false;
-                const idMatch = text.match(/\d{10}/);
-                if (idMatch) { document.getElementById('id-no').value = idMatch[0]; found = true; }
-                const presMatch = text.match(/[kK]\d{7}/);
-                if (presMatch) { document.getElementById('pres-no').value = presMatch[0].toLowerCase(); found = true; }
-
-                if (found || text.length > 15) {
-                    showQueueModal();
-                    if (!document.getElementById('continuous-scan-check').checked) toggleCamera();
-                } else {
-                    statusEl.textContent = 'كود غير معروف';
-                }
-            }).catch(err => {
-                console.error(err);
-                statusEl.textContent = 'خطأ في الكاميرا';
-            });
-        }
-    </script>
+    loadFiles();
+    setInterval(loadFiles, 10000); // Auto-refresh every 10s
+  </script>
 </body>
+
 </html>
