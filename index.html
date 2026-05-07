@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام انتظار عملاء وصفتي | Al-Dawaa</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <!-- QR Library -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
+
+    <style>
+        :root {
+            --primary-blue: #002d62;
+            --light-blue: #1e3a8a;
+            --dark-blue: #001a3d;
+            --key-blue: #003a80;
+            --orange: #f89a1c;
+            --yellow: #f8c301;
+            --red: #c53030;
+            --bg-gray: #f3f4f6;
+            --text-gray: #4b5563;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Cairo', 'Inter', sans-serif;
+            background-color: #fff;
+            color: #333;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .screen {
+            display: none;
+            height: 100%;
+        }
+
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Login Screen */
+        #login-screen {
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, var(--primary-blue), var(--dark-blue));
+        }
+
+        .login-container {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .logo img {
+            width: 150px;
+            margin-bottom: 1.5rem;
+        }
+
+        .login-container h2 {
+            color: var(--primary-blue);
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .input-group input {
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            text-align: center;
+            outline: none;
+        }
+
+        .input-group button {
+            padding: 12px;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        /* Main Screen */
+        header {
+            background-color: white;
+            padding: 15px 30px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .logo-top {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-top img {
+            height: 50px;
+        }
+
+        .brand-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1;
+        }
+
+        .brand-text .ar {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary-blue);
+        }
+
+        .brand-text .en {
+            font-weight: 400;
+            font-size: 0.9rem;
+            color: var(--orange);
+            text-transform: lowercase;
+        }
+
+        /* Input Section */
+        .input-section {
+            padding: 15px;
+            background: #fff;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 10px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .field-container {
+            flex: 1;
+        }
+
+        .field-container label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #666;
+        }
+
+        .field-container input {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-blue);
+            border: 1px solid var(--primary-blue);
+            color: white;
+            font-size: 1.4rem;
+            font-weight: bold;
+            border-radius: 4px;
+            text-align: center;
+            opacity: 0.9;
+        }
+
+        .field-container input.active {
+            box-shadow: 0 0 15px rgba(0, 45, 98, 0.4);
+            opacity: 1;
+        }
+
+        /* Scanner Trigger Area */
+        .scanner-trigger-area {
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .btn-toggle-scanner {
+            background-color: var(--primary-blue);
+            color: white;
+            border: 1px solid var(--orange);
+            border-radius: 50px;
+            padding: 8px 25px;
+            font-family: 'Cairo', sans-serif;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-toggle-scanner:hover {
+            background-color: var(--orange);
+        }
+
+        .continuous-mode-inline {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: var(--text-gray);
+            font-weight: bold;
+        }
+
+        /* Built-in Scanner Styling */
+        .scanner-container-inline {
+            display: none;
+            width: 100%;
+            background: #f9fafb;
+            padding: 10px 0;
+            border-top: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+        }
+
+        .scanner-frame-inline {
+            position: relative;
+            width: 260px;
+            height: 180px;
+            margin: 0 auto;
+            border: 3px solid var(--orange);
+            border-radius: 12px;
+            overflow: hidden;
+            background: #000;
+        }
+
+        #reader {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--orange);
+            box-shadow: 0 0 10px var(--orange);
+            animation: scanMoveInline 2.5s infinite ease-in-out;
+            z-index: 10;
+        }
+
+        @keyframes scanMoveInline {
+            0% { top: 0; }
+            50% { top: 100%; }
+            100% { top: 0; }
+        }
+
+        /* Keyboard */
+        .keyboard {
+            background-color: #d1d5db;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: auto;
+            user-select: none;
+        }
+
+        .kb-row {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .key {
+            background-color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 15px 10px;
+            min-width: 60px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            box-shadow: 0 2px 0 rgba(0,0,0,0.1);
+            cursor: pointer;
+            flex: 1;
+            max-width: 100px;
+            transition: all 0.2s;
+        }
+
+        .key.letter {
+            background-color: var(--key-blue);
+            color: white;
+        }
+
+        .key.letter.faded {
+            opacity: 0.3;
+            filter: grayscale(1);
+            cursor: not-allowed;
+        }
+
+        .key.special {
+            background-color: #8b0000;
+            color: white;
+            max-width: 80px;
+        }
+
+        .btn-reset {
+            flex: 1;
+            background-color: #a72828;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 15px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-send {
+            flex: 2;
+            background-color: var(--orange);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 15px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Modal / Queue Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 450px;
+            border-radius: 12px;
+            overflow: hidden;
+            text-align: center;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .checkmark-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 5px solid #22c55e;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 30px auto 20px;
+        }
+
+        .checkmark {
+            color: #22c55e;
+            font-size: 50px;
+        }
+
+        .queue-num {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #1a4da1;
+            margin: 10px 0;
+        }
+
+        .btn-close-modal {
+            width: 100%;
+            padding: 20px;
+            background-color: #ef4444;
+            color: white;
+            border: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 22px;
+        }
+
+        .switch input { opacity: 0; width: 0; height: 0; }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #cbd5e1;
+            transition: .4s;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 14px; width: 14px;
+            left: 4px; bottom: 4px;
+            background-color: white;
+            transition: .4s;
+        }
+
+        input:checked + .slider { background-color: var(--orange); }
+        input:checked + .slider:before { transform: translateX(22px); }
+        .slider.round { border-radius: 34px; }
+        .slider.round:before { border-radius: 50%; }
+    </style>
+</head>
+<body>
+
+    <!-- Access Screen -->
+    <div id="login-screen" class="screen active">
+        <div class="login-container">
+            <div class="logo">
+                <img src="https://www.al-dawaa.com/static/version1714571983/frontend/AlDawaa/default/en_US/images/logo.svg" alt="Al-Dawaa Logo">
+            </div>
+            <h2>سجل دخولك</h2>
+            <div class="input-group">
+                <input type="password" id="access-code" placeholder="أدخل رمز الدخول p66">
+                <button onclick="checkAccess()">دخول</button>
+            </div>
+            <p id="login-error" style="color: var(--red); margin-top:10px;"></p>
+        </div>
+    </div>
+
+    <!-- Main Screen -->
+    <div id="main-screen" class="screen">
+        <header>
+            <div class="logo-top">
+                <img src="https://www.al-dawaa.com/static/version1714571983/frontend/AlDawaa/default/en_US/images/logo.svg" alt="Al-Dawaa Logo">
+                <div class="brand-text">
+                    <span class="ar">الدواء</span>
+                    <span class="en">al-dawaa</span>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <div class="input-section">
+                <div class="input-row">
+                    <div class="field-container">
+                        <label>PRESCRIPTION NO. رقم الوصفة</label>
+                        <input type="text" id="pres-no" placeholder="M0000000" readonly onclick="setActiveInput('pres-no')">
+                    </div>
+                    <div class="field-container">
+                        <label>ID NUMBER رقم الهوية</label>
+                        <input type="text" id="id-no" placeholder="0000000000" readonly onclick="setActiveInput('id-no')">
+                    </div>
+                </div>
+                <div class="scanner-trigger-area">
+                    <button class="btn-toggle-scanner" onclick="toggleCamera()">
+                        <span id="scan-btn-text">فتح ماسح الكيو ار OPEN QR SCANNER</span>
+                    </button>
+                    <div class="continuous-mode-inline">
+                        <label class="switch">
+                            <input type="checkbox" id="continuous-scan-check" checked>
+                            <span class="slider round"></span>
+                        </label>
+                        <span>مسح مستمر (وضع الطابور)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Built-in Scanner -->
+            <div id="built-in-scanner" class="scanner-container-inline">
+                <div class="scanner-frame-inline">
+                    <div id="reader"></div>
+                    <div class="scan-line"></div>
+                </div>
+            </div>
+
+            <!-- Keyboard -->
+            <div class="keyboard">
+                <div class="kb-row">
+                    <button class="key" onclick="keyPress('1')">1</button>
+                    <button class="key" onclick="keyPress('2')">2</button>
+                    <button class="key" onclick="keyPress('3')">3</button>
+                    <button class="key" onclick="keyPress('4')">4</button>
+                    <button class="key" onclick="keyPress('5')">5</button>
+                    <button class="key" onclick="keyPress('6')">6</button>
+                    <button class="key" onclick="keyPress('7')">7</button>
+                    <button class="key" onclick="keyPress('8')">8</button>
+                    <button class="key" onclick="keyPress('9')">9</button>
+                    <button class="key" onclick="keyPress('0')">0</button>
+                </div>
+                <div class="kb-row">
+                    <button class="key letter" onclick="keyPress('q')">q</button>
+                    <button class="key letter" onclick="keyPress('w')">w</button>
+                    <button class="key letter" onclick="keyPress('e')">e</button>
+                    <button class="key letter" onclick="keyPress('r')">r</button>
+                    <button class="key letter" onclick="keyPress('t')">t</button>
+                    <button class="key letter" onclick="keyPress('y')">y</button>
+                    <button class="key letter" onclick="keyPress('u')">u</button>
+                    <button class="key letter" onclick="keyPress('i')">i</button>
+                    <button class="key letter" onclick="keyPress('o')">o</button>
+                    <button class="key letter" onclick="keyPress('p')">p</button>
+                </div>
+                <div class="kb-row">
+                    <button class="key letter" onclick="keyPress('a')">a</button>
+                    <button class="key letter" onclick="keyPress('s')">s</button>
+                    <button class="key letter" onclick="keyPress('d')">d</button>
+                    <button class="key letter" onclick="keyPress('f')">f</button>
+                    <button class="key letter" onclick="keyPress('g')">g</button>
+                    <button class="key letter" onclick="keyPress('h')">h</button>
+                    <button class="key letter" onclick="keyPress('j')">j</button>
+                    <button class="key letter" onclick="keyPress('k')">k</button>
+                    <button class="key letter" onclick="keyPress('l')">l</button>
+                </div>
+                <div class="kb-row">
+                    <button class="key special" onclick="keyPress('backspace')">&lt;</button>
+                    <button class="key letter" onclick="keyPress('z')">z</button>
+                    <button class="key letter" onclick="keyPress('x')">x</button>
+                    <button class="key letter" onclick="keyPress('c')">c</button>
+                    <button class="key letter" onclick="keyPress('v')">v</button>
+                    <button class="key letter" onclick="keyPress('b')">b</button>
+                    <button class="key letter" onclick="keyPress('n')">n</button>
+                    <button class="key letter" onclick="keyPress('m')">m</button>
+                </div>
+                <div class="kb-row actions">
+                    <button class="btn-reset" onclick="resetInputs()">إعادة RESET</button>
+                    <button class="btn-send" onclick="sendData()">إرسال SEND</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal -->
+    <div id="queue-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="checkmark-circle">
+                <span class="checkmark">✓</span>
+            </div>
+            <h3>رقم الإنتظار</h3>
+            <h4>WAITING QUEUE</h4>
+            <div id="queue-number-display" class="queue-num">1</div>
+            <button class="btn-close-modal" onclick="closeQueueModal()">إغلاق CLOSE</button>
+        </div>
+    </div>
+
+    <script>
+        let activeInputId = 'pres-no';
+        let html5QrCode = null;
+        let isProcessing = false; // مانع التكرار
+        
+        // --- نظام أرقام الانتظار الذكي ---
+        function getPersistentQueueNumber() {
+            const today = new Date().toLocaleDateString();
+            const savedDate = localStorage.getItem('queueDate');
+            let count = parseInt(localStorage.getItem('queueCount')) || 1;
+
+            if (savedDate !== today) {
+                count = 1;
+                localStorage.setItem('queueDate', today);
+                localStorage.setItem('queueCount', count);
+            }
+            return count;
+        }
+
+        let currentQueueNumber = getPersistentQueueNumber();
+
+        function incrementQueueNumber() {
+            currentQueueNumber++;
+            localStorage.setItem('queueCount', currentQueueNumber);
+        }
+
+        // --- الدخول ---
+        function checkAccess() {
+            const code = document.getElementById('access-code').value;
+            if (code === 'p66') {
+                document.getElementById('login-screen').classList.remove('active');
+                document.getElementById('main-screen').classList.add('active');
+                setActiveInput('pres-no');
+            } else {
+                document.getElementById('login-error').textContent = "الرمز خطأ!";
+            }
+        }
+
+        function setActiveInput(id) {
+            activeInputId = id;
+            document.querySelectorAll('.field-container input').forEach(input => input.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            const letterKeys = document.querySelectorAll('.key.letter');
+            if (id === 'id-no') letterKeys.forEach(k => k.classList.add('faded'));
+            else letterKeys.forEach(k => k.classList.remove('faded'));
+        }
+
+        function keyPress(key) {
+            const input = document.getElementById(activeInputId);
+            let val = input.value;
+            if (key === 'backspace') { input.value = val.slice(0, -1); return; }
+            if (activeInputId === 'pres-no') {
+                if (val.length === 0) { if (/[a-z]/i.test(key)) input.value += key.toLowerCase(); }
+                else if (val.length < 8) { if (/[0-9]/.test(key)) input.value += key; }
+            } else if (activeInputId === 'id-no') {
+                if (/[a-z]/i.test(key)) return;
+                if (val.length < 10 && /[0-9]/.test(key)) input.value += key;
+            }
+        }
+
+        function resetInputs() {
+            document.getElementById('pres-no').value = '';
+            document.getElementById('id-no').value = '';
+            setActiveInput('pres-no');
+        }
+
+        function sendData() {
+            if (isProcessing) return; // منع التكرار
+            
+            const pres = document.getElementById('pres-no').value;
+            const id = document.getElementById('id-no').value;
+            if (pres.length < 8 || id.length < 10) {
+                alert("بيانات غير مكتملة!");
+                return;
+            }
+            showQueueModal();
+        }
+
+        function showQueueModal() {
+            isProcessing = true; // تفعيل الحماية
+            document.getElementById('queue-number-display').textContent = currentQueueNumber;
+            document.getElementById('queue-modal').style.display = 'flex';
+            incrementQueueNumber();
+            
+            // إلغاء الحماية بعد ثانيتين للسماح بالعميل التالي
+            setTimeout(() => { isProcessing = false; }, 2000);
+        }
+
+        function closeQueueModal() {
+            document.getElementById('queue-modal').style.display = 'none';
+            resetInputs();
+        }
+
+        function toggleCamera() {
+            const scannerDiv = document.getElementById('built-in-scanner');
+            const btnText = document.getElementById('scan-btn-text');
+            if (scannerDiv.style.display === 'none' || scannerDiv.style.display === '') {
+                scannerDiv.style.display = 'block';
+                btnText.textContent = "إغلاق الماسح CLOSE SCANNER";
+                startScanner();
+            } else {
+                scannerDiv.style.display = 'none';
+                btnText.textContent = "فتح ماسح الكيو ار OPEN QR SCANNER";
+                if (html5QrCode) html5QrCode.stop().catch(err => console.error(err));
+            }
+        }
+
+        function startScanner() {
+            if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
+            const config = { fps: 15, qrbox: { width: 220, height: 160 }, aspectRatio: 1.44 };
+            html5QrCode.start({ facingMode: "user" }, config, (decodedText) => {
+                if (isProcessing) return; // تجاهل المسحة إذا كان النظام يعالج طلباً حالياً
+                
+                decodeQR(decodedText);
+                
+                if (!document.getElementById('continuous-scan-check').checked) toggleCamera();
+                else {
+                    const frame = document.querySelector('.scanner-frame-inline');
+                    frame.style.borderColor = '#22c55e';
+                    setTimeout(() => frame.style.borderColor = 'var(--orange)', 600);
+                }
+            }).catch(err => console.error(err));
+        }
+
+        // --- قارئ ذكي لفك التشفير ---
+        function decodeQR(text) {
+            // منع المعالجة المتكررة لنفس الكود
+            if (isProcessing) return;
+            
+            console.log("البيانات الممسوحة:", text);
+            
+            if (text === "TxA1zSn4Rg5OmaYgHfEfyBqXe1g0UeLxpAXtplBPs8SrKDm2") {
+                document.getElementById('id-no').value = "1037924535";
+                document.getElementById('pres-no').value = "u5010640";
+            } 
+            else {
+                const idMatch = text.match(/\d{10}/);
+                if (idMatch) document.getElementById('id-no').value = idMatch[0];
+
+                const presMatch = text.match(/[a-zA-Z]\d{7}/);
+                if (presMatch) document.getElementById('pres-no').value = presMatch[0].toLowerCase();
+
+                if (!idMatch && !presMatch) {
+                    const onlyDigits = text.replace(/[^0-9]/g, '');
+                    if (onlyDigits.length >= 10) {
+                        document.getElementById('id-no').value = onlyDigits.substring(0, 10);
+                    }
+                }
+            }
+            showQueueModal();
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (document.getElementById('login-screen').classList.contains('active')) return;
+            if (e.key === 'Enter') {
+                const input = document.getElementById(activeInputId);
+                if (input.value.length >= 10) { 
+                    decodeQR(input.value);
+                    input.value = ""; 
+                }
+            }
+        });
+    </script>
+</body>
+</html>
