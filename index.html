@@ -69,44 +69,31 @@
             max-width: 400px;
         }
 
-        .logo img {
-            width: 150px;
-            margin-bottom: 1.5rem;
-        }
-
-        /* Main Screen */
+        /* Main Screen Layout */
         header {
             background-color: white;
-            padding: 8px 20px;
-            border-bottom: 1px solid var(--bg-gray);
+            padding: 10px 20px;
+            border-bottom: 2px solid var(--bg-gray);
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-shrink: 0;
         }
 
-        .logo-top img {
-            height: 38px;
-        }
+        .logo-top img { height: 40px; }
+        .brand-text .ar { font-weight: 700; font-size: 1.2rem; color: var(--primary-blue); }
 
-        .brand-text .ar {
-            font-weight: 700;
-            font-size: 1.2rem;
-            color: var(--primary-blue);
-        }
-
-        /* Main Content Area */
         main {
             flex: 1;
             display: flex;
             flex-direction: column;
             background-color: #f8fafc;
-            overflow: hidden;
+            overflow-y: auto; /* Required for rotation fallback */
             justify-content: space-between;
         }
 
         .input-section {
-            padding: 10px 15px;
+            padding: 15px;
             background: #fff;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
             flex-shrink: 0;
@@ -114,8 +101,8 @@
 
         .input-row {
             display: flex;
-            gap: 12px;
-            max-width: 900px;
+            gap: 15px;
+            max-width: 1000px;
             margin: 0 auto;
         }
 
@@ -126,9 +113,9 @@
 
         .field-container label {
             display: block;
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             font-weight: 800;
-            margin-bottom: 3px;
+            margin-bottom: 5px;
             color: var(--text-gray);
         }
 
@@ -138,9 +125,9 @@
             background-color: var(--primary-blue);
             border: 3px solid transparent;
             color: white;
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             font-weight: 700;
-            border-radius: 10px;
+            border-radius: 12px;
             text-align: center;
         }
 
@@ -149,184 +136,139 @@
             background-color: var(--dark-blue);
         }
 
-        /* Interactive Scanner Area */
-        .scanner-controls {
-            margin-top: 10px;
+        /* Scanner Controls & Queue Style */
+        .controls-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .queue-toggle-box {
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 15px;
+            gap: 10px;
+            padding: 8px 20px;
+            background: #f1f5f9;
+            border-radius: 50px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .queue-toggle-box span {
+            font-weight: 700;
+            color: var(--primary-blue);
+            font-size: 0.9rem;
         }
 
         .circle-btn {
-            width: 100px;
-            height: 100px;
+            width: 100px; height: 100px;
             border-radius: 50%;
             border: 4px solid var(--orange);
             background-color: var(--primary-blue);
             color: white;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-weight: 700;
-            font-size: 0.9rem;
-            gap: 5px;
-            transition: 0.2s;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            cursor: pointer; font-weight: 700; font-size: 0.9rem; gap: 5px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: 0.2s;
         }
 
         .circle-btn:active { transform: scale(0.95); }
         .circle-btn.close { border-color: #ef4444; }
 
-        .btn-icon { font-size: 1.4rem; }
-
-        /* Large Scanner Window */
+        /* Scanner Window */
         .scanner-container-inline {
             display: none;
             width: 100%;
             background: #000;
-            padding: 5px 0;
-            flex: 1; /* Take available middle space */
+            flex: 1;
             min-height: 250px;
             position: relative;
         }
 
         .scanner-frame-inline {
             position: relative;
-            width: 90%;
-            max-width: 500px;
-            height: 95%;
-            margin: 0 auto;
+            width: 90%; height: 95%;
+            margin: 1% auto;
             border: 4px solid var(--orange);
             border-radius: 20px;
             overflow: hidden;
-            background-color: #000;
+            background: #000;
         }
 
-        #reader {
-            width: 100% !important;
-            height: 100% !important;
-        }
+        #reader { width: 100% !important; height: 100% !important; }
 
-        /* Hide scanner UI text */
-        #reader__status_span, #reader__scan_region { display: none; }
-
-        /* Keyboard Area */
+        /* Keyboard */
         .keyboard {
             background-color: #e5e7eb;
-            padding: 8px 6px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
+            padding: 10px 8px;
+            display: flex; flex-direction: column; gap: 8px;
             border-top: 2px solid #d1d5db;
             flex-shrink: 0;
+            margin-top: auto;
         }
 
-        .kb-row {
-            display: flex;
-            gap: 6px;
-            justify-content: center;
-        }
+        .kb-row { display: flex; gap: 8px; justify-content: center; }
 
         .key {
-            background-color: #fff;
-            border: none;
-            border-radius: 8px;
-            padding: 18px 2px;
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: #1f2937;
-            box-shadow: 0 3px 0 #9ca3af;
-            cursor: pointer;
-            flex: 1;
-            max-width: 75px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            background-color: #fff; border: none; border-radius: 10px; padding: 20px 2px;
+            font-size: 1.5rem; font-weight: 700; color: #1f2937;
+            box-shadow: 0 4px 0 #9ca3af; cursor: pointer; flex: 1; max-width: 80px;
+            display: flex; justify-content: center; align-items: center;
         }
 
-        .key.letter {
-            background-color: var(--key-blue);
-            color: white;
-            box-shadow: 0 3px 0 #001a3d;
+        .key.letter { background-color: var(--key-blue); color: white; box-shadow: 0 4px 0 #001a3d; }
+        .key.special { background-color: #991b1b; color: white; box-shadow: 0 4px 0 #450a0a; }
+
+        .btn-send, .btn-reset { padding: 20px; font-size: 1.4rem; font-weight: 800; border: none; border-radius: 15px; color: white; cursor: pointer; }
+        .btn-send { flex: 2; background-color: var(--orange); box-shadow: 0 5px 0 #c2410c; }
+        .btn-reset { flex: 1; background-color: #dc2626; box-shadow: 0 5px 0 #991b1b; }
+
+        /* Rotation & Orientation Support */
+        @media (orientation: landscape) {
+            main { justify-content: flex-start; }
+            .keyboard { padding: 5px; gap: 4px; }
+            .key { padding: 12px 2px; font-size: 1.2rem; }
+            .btn-send, .btn-reset { padding: 12px; font-size: 1.2rem; }
+            .scanner-frame-inline { height: 200px; width: 400px; }
+            .controls-area { flex-direction: row; justify-content: center; margin-top: 10px; }
         }
 
-        .key.special { background-color: #991b1b; color: white; box-shadow: 0 3px 0 #450a0a; }
+        /* Switch UI */
+        .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--orange); }
+        input:checked + .slider:before { transform: translateX(24px); }
 
-        .btn-reset, .btn-send {
-            padding: 16px;
-            font-size: 1.2rem;
-            font-weight: 800;
-            border: none;
-            border-radius: 12px;
-            color: white;
-            cursor: pointer;
-        }
-
-        .btn-reset { flex: 1; background-color: #dc2626; box-shadow: 0 4px 0 #991b1b; }
-        .btn-send { flex: 2; background-color: var(--orange); box-shadow: 0 4px 0 #c2410c; }
-
-        /* Modal Settings */
+        /* Modal */
         .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 45, 98, 0.9);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-            backdrop-filter: blur(8px);
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 45, 98, 0.9); display: none;
+            justify-content: center; align-items: center; z-index: 2000;
+            backdrop-filter: blur(10px);
         }
-
-        .modal-content {
-            background: white;
-            width: 90%;
-            max-width: 400px;
-            border-radius: 30px;
-            overflow: hidden;
-            text-align: center;
-        }
-
-        .queue-num {
-            font-size: 5rem;
-            font-weight: 900;
-            color: var(--primary-blue);
-            margin: 10px 0;
-        }
-
-        /* Adjustments when scanner is open */
-        body.scanner-open .keyboard { padding: 4px; gap: 4px; }
-        body.scanner-open .key { padding: 10px 2px; font-size: 1.1rem; }
-        body.scanner-open .btn-send, body.scanner-open .btn-reset { padding: 10px; font-size: 1rem; }
+        .modal-content { background: white; width: 90%; max-width: 450px; border-radius: 30px; text-align: center; padding: 25px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        .queue-num { font-size: 6rem; font-weight: 900; color: var(--primary-blue); margin: 10px 0; }
     </style>
 </head>
-<body class="">
+<body>
 
-    <!-- Login -->
     <div id="login-screen" class="screen active">
         <div class="login-container">
-            <div class="logo">
-                <img src="https://www.al-dawaa.com/static/version1714571983/frontend/AlDawaa/default/en_US/images/logo.svg" alt="Al-Dawaa Logo">
-            </div>
-            <h2 style="color: var(--primary-blue); margin-bottom: 20px;">نظام انتظار عملاء وصفتي</h2>
-            <div class="input-group" style="display: flex; flex-direction: column; gap: 15px;">
-                <input type="password" id="access-code" placeholder="رمز الدخول p66" style="padding: 15px; border-radius: 12px; border: 2px solid #ddd; font-size: 1.2rem; text-align: center;">
-                <button onclick="checkAccess()" style="padding: 15px; background: var(--primary-blue); color: white; border: none; border-radius: 12px; font-size: 1.2rem; font-weight: bold; cursor: pointer;">دخول</button>
-            </div>
+            <img src="https://www.al-dawaa.com/static/version1714571983/frontend/AlDawaa/default/en_US/images/logo.svg" alt="Logo" style="width:160px; margin-bottom:20px;">
+            <h2 style="color: var(--primary-blue); margin-bottom: 20px;">دخول موظف وصفتي</h2>
+            <input type="password" id="access-code" placeholder="رمز الدخول p66" style="width:100%; padding: 18px; border-radius: 12px; border: 2px solid #ddd; font-size: 1.2rem; text-align: center; margin-bottom:20px;">
+            <button onclick="checkAccess()" style="width:100%; padding: 18px; background: var(--primary-blue); color: white; border: none; border-radius: 12px; font-size: 1.2rem; font-weight: bold;">دخول</button>
             <p id="login-error" style="color: var(--red); margin-top: 15px; font-weight: bold;"></p>
         </div>
     </div>
 
-    <!-- Main -->
     <div id="main-screen" class="screen">
         <header>
-            <div class="logo-top">
-                <img src="https://www.al-dawaa.com/static/version1714571983/frontend/AlDawaa/default/en_US/images/logo.svg" alt="Al-Dawaa Logo">
-                <div class="brand-text"><span class="ar">الدواء</span></div>
-            </div>
-            <div style="font-size: 0.9rem; color: #666; font-weight: bold;">صيدلية الدواء</div>
+            <img src="https://www.al-dawaa.com/static/version1714571983/frontend/AlDawaa/default/en_US/images/logo.svg" alt="Logo" style="height:40px;">
+            <div style="font-weight: bold; color: var(--primary-blue); font-size: 1.2rem;">نظام انتظار وصفتي</div>
         </header>
 
         <main>
@@ -342,40 +284,24 @@
                     </div>
                 </div>
                 
-                <div class="scanner-controls">
-                    <div style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
-                        <label class="switch">
-                            <input type="checkbox" id="continuous-scan-check" checked>
-                            <span class="slider"></span>
-                        </label>
-                        <span style="font-size: 0.8rem; font-weight: bold;">مسح طابور</span>
+                <div class="controls-area">
+                    <div class="queue-toggle-box">
+                        <label class="switch"><input type="checkbox" id="continuous-scan-check" checked><span class="slider"></span></label>
+                        <span>مسح طابور</span>
                     </div>
-                    
-                    <button class="circle-btn" id="btn-camera-toggle" onclick="toggleCamera()">
-                        <span class="btn-icon">📸</span>
-                        <span id="scan-btn-text">فتح الكاميرا</span>
-                    </button>
 
-                    <button class="circle-btn" id="btn-switch-camera" onclick="switchCamera()" style="display: none;">
-                        <span class="btn-icon">🔄</span>
-                        <span>تبديل الكاميرا</span>
-                    </button>
-                    
-                    <button class="circle-btn close" id="btn-close-scanner" onclick="toggleCamera()" style="display: none;">
-                        <span class="btn-icon">❌</span>
-                        <span>إغلاق الكاميرا</span>
-                    </button>
+                    <div style="display: flex; gap: 20px;">
+                        <button class="circle-btn" id="btn-camera-toggle" onclick="toggleCamera()"><span>📸</span><span>فتح الكاميرا</span></button>
+                        <button class="circle-btn" id="btn-switch-camera" onclick="switchCamera()" style="display: none;"><span>🔄</span><span>تبديل</span></button>
+                        <button class="circle-btn close" id="btn-close-scanner" onclick="toggleCamera()" style="display: none;"><span>❌</span><span>إغلاق</span></button>
+                    </div>
                 </div>
             </div>
 
-            <!-- Built-in Scanner -->
             <div id="built-in-scanner" class="scanner-container-inline">
-                <div class="scanner-frame-inline">
-                    <div id="reader"></div>
-                </div>
+                <div class="scanner-frame-inline"><div id="reader"></div></div>
             </div>
 
-            <!-- Keyboard -->
             <div class="keyboard">
                 <div class="kb-row">
                     <button class="key" onclick="keyPress('1')">1</button>
@@ -430,13 +356,12 @@
         </main>
     </div>
 
-    <!-- Modal -->
     <div id="queue-modal" class="modal-overlay">
         <div class="modal-content">
-            <div style="width: 80px; height: 80px; border-radius: 50%; border: 4px solid #10b981; color: #10b981; display: flex; align-items: center; justify-content: center; font-size: 40px; margin: 30px auto 10px;">✓</div>
-            <h3 style="color: #666;">تم التسجيل بنجاح</h3>
+            <div style="width: 80px; height: 80px; border-radius: 50%; border: 5px solid #10b981; color: #10b981; display: flex; align-items: center; justify-content: center; font-size: 40px; margin: 0 auto 10px;">✓</div>
+            <h3 style="color: #666; font-size: 1.4rem;">تم التسجيل بنجاح</h3>
             <div id="queue-number-display" class="queue-num">1</div>
-            <button onclick="closeQueueModal()" style="width: 100%; padding: 20px; background: #ef4444; color: white; border: none; font-size: 1.2rem; font-weight: bold;">إغلاق</button>
+            <button onclick="closeQueueModal()" style="width: 100%; padding: 20px; background: #ef4444; color: white; border: none; font-size: 1.3rem; font-weight: bold; border-radius:15px;">إغلاق التذكرة</button>
         </div>
     </div>
 
@@ -452,7 +377,7 @@
                 document.getElementById('main-screen').classList.add('active');
                 setActiveInput('id-no');
             } else {
-                document.getElementById('login-error').textContent = "⚠️ خطأ في الرمز";
+                document.getElementById('login-error').textContent = "⚠️ رمز خطأ";
             }
         }
 
@@ -460,9 +385,6 @@
             activeInputId = id;
             document.querySelectorAll('.field-container input').forEach(input => input.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            const letterKeys = document.querySelectorAll('.key.letter');
-            if (id === 'id-no') letterKeys.forEach(k => k.classList.add('faded'));
-            else letterKeys.forEach(k => k.classList.remove('faded'));
         }
 
         function keyPress(key) {
@@ -485,7 +407,7 @@
 
         function sendData() {
             if (isProcessing) return;
-            if (document.getElementById('id-no').value.length < 10) { alert("رقم الهوية ناقص!"); return; }
+            if (document.getElementById('id-no').value.length < 10) { alert("أكمل البيانات!"); return; }
             showQueueModal();
         }
 
@@ -514,29 +436,38 @@
                 switchBtn.style.display = 'flex';
                 closeBtn.style.display = 'flex';
                 toggleBtn.style.display = 'none';
-                document.body.classList.add('scanner-open');
                 startScanner();
             } else {
                 scannerDiv.style.display = 'none';
                 switchBtn.style.display = 'none';
                 closeBtn.style.display = 'none';
                 toggleBtn.style.display = 'flex';
-                document.body.classList.remove('scanner-open');
-                if (html5QrCode) html5QrCode.stop();
+                if (html5QrCode) html5QrCode.stop().catch(e => console.log(e));
             }
         }
 
         function switchCamera() {
             currentFacingMode = (currentFacingMode === "user") ? "environment" : "user";
-            if (html5QrCode) html5QrCode.stop().then(() => startScanner());
+            if (html5QrCode) html5QrCode.stop().then(() => startScanner()).catch(e => startScanner());
         }
 
         function startScanner() {
             if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
-            // Increased qrbox size for faster detection
-            const config = { fps: 20, qrbox: (viewWidth, viewHeight) => {
-                return { width: viewWidth * 0.8, height: viewHeight * 0.7 };
-            }, aspectRatio: 1.0 };
+            
+            // ULTRA FAST & ACCURATE
+            const config = { 
+                fps: 30, 
+                qrbox: (viewWidth, viewHeight) => {
+                    return { width: viewWidth * 0.85, height: viewHeight * 0.85 };
+                },
+                aspectRatio: 1.0,
+                videoConstraints: {
+                    facingMode: currentFacingMode,
+                    width: { ideal: 1920 },
+                    height: { ideal: 1080 },
+                    focusMode: "continuous"
+                }
+            };
 
             html5QrCode.start({ facingMode: currentFacingMode }, config, (text) => {
                 if (isProcessing) return;
@@ -544,6 +475,7 @@
                 if (idMatch) document.getElementById('id-no').value = idMatch[0];
                 const presMatch = text.match(/[a-zA-Z]\d{7}/);
                 if (presMatch) document.getElementById('pres-no').value = presMatch[0].toLowerCase();
+                
                 showQueueModal();
                 if (!document.getElementById('continuous-scan-check').checked) toggleCamera();
             }).catch(err => console.error(err));
